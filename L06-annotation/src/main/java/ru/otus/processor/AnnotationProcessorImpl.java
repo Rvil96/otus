@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.annotation.After;
@@ -24,12 +23,16 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
             throw new IllegalArgumentException(msg);
         }
 
-        Method[] methods = Optional.of(clazz.getDeclaredMethods()).orElseThrow();
+        Method[] methods = clazz.getDeclaredMethods();
 
         List<Method> testAnnotationMethods = getAnnotatedMethod(methods, Test.class);
         List<Method> beforeAnnotationMethods = getAnnotatedMethod(methods, Before.class);
         List<Method> afterAnnotationMethods = getAnnotatedMethod(methods, After.class);
 
+        if (testAnnotationMethods.isEmpty()) {
+            String msg = "Unable to process null test method";
+            log.error(msg);
+        }
         for (Method method : testAnnotationMethods) {
             Object instance = getInstance(clazz);
             try {
@@ -62,6 +65,9 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     }
 
     private void invokeMethods(List<Method> methods, Object instance) {
+        if (methods.isEmpty()) {
+            return;
+        }
         for (Method method : methods) {
             try {
                 method.invoke(instance);

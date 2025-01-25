@@ -1,7 +1,7 @@
 package ru.otus;
 
-import ru.otus.processor.AnnotationHandler;
-import ru.otus.processor.AnnotationHandlerImpl;
+import ru.otus.handler.AnnotationHandler;
+import ru.otus.handler.AnnotationHandlerImpl;
 import ru.otus.tested.TestedClass;
 
 public class Main {

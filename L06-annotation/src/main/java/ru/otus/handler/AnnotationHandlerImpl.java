@@ -1,4 +1,4 @@
-package ru.otus.processor;
+package ru.otus.handler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;

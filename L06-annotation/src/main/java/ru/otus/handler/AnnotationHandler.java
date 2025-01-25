@@ -1,4 +1,4 @@
-package ru.otus.processor;
+package ru.otus.handler;
 
 public interface AnnotationHandler {
     void handle(Class<?> clazz);

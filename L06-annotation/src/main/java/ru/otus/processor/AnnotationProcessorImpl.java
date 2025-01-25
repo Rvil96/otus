@@ -65,9 +65,6 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     }
 
     private void invokeMethods(List<Method> methods, Object instance) {
-        if (methods.isEmpty()) {
-            return;
-        }
         for (Method method : methods) {
             try {
                 method.invoke(instance);

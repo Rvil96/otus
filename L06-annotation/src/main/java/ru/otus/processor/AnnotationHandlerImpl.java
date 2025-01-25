@@ -11,12 +11,12 @@ import ru.otus.annotation.After;
 import ru.otus.annotation.Before;
 import ru.otus.annotation.Test;
 
-public class AnnotationProcessorImpl implements AnnotationProcessor {
+public class AnnotationHandlerImpl implements AnnotationHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(AnnotationProcessorImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(AnnotationHandlerImpl.class);
 
     @Override
-    public void process(Class<?> clazz) {
+    public void handle(Class<?> clazz) {
         if (clazz == null) {
             String msg = "Unable to process null class";
             log.error(msg);
@@ -33,17 +33,25 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
             String msg = "Unable to process null test method";
             log.error(msg);
         }
+        int countSuccess = 0;
+        int countFail = 0;
         for (Method method : testAnnotationMethods) {
             Object instance = getInstance(clazz);
             try {
                 invokeMethods(beforeAnnotationMethods, instance);
                 method.invoke(instance);
+                countSuccess++;
             } catch (Exception e) {
                 log.info("The test method '{}' failed:((((", method.getName());
+                countFail++;
             } finally {
                 invokeMethods(afterAnnotationMethods, instance);
             }
         }
+        String report = String.format(
+                "%nTests started: %d%nTests finished: %d%nTest failed: %d%n",
+                testAnnotationMethods.size(), countSuccess, countFail);
+        log.info(report);
     }
 
     private List<Method> getAnnotatedMethod(Method[] methods, Class<? extends Annotation> annotation) {

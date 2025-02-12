@@ -24,7 +24,8 @@ public class LogProxyFactory implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (method.isAnnotationPresent(Log.class)) {
+        Method realMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
+        if (realMethod.isAnnotationPresent(Log.class)) {
             logger.info("Execute method: {} , params: {}", method.getName(), Arrays.toString(args));
         }
         return method.invoke(target, args);

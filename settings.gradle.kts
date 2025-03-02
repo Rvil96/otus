@@ -30,4 +30,3 @@ pluginManagement {
         id("com.diffplug.spotless") version spotless
     }
 }
-include("L12-solid")

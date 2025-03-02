@@ -1,7 +1,10 @@
 package ru.otus.model;
 
+import java.util.ArrayList;
+import ru.otus.annotations.DeepCloneable;
+
 @SuppressWarnings({"java:S107", "java:S1135"})
-public class Message {
+public class Message implements DeepCloneable<Message> {
     private final long id;
     private final String field1;
     private final String field2;
@@ -142,6 +145,16 @@ public class Message {
                 + field11 + '\'' + ", field12='"
                 + field12 + '\'' + ", field13="
                 + field13 + '}';
+    }
+
+    @Override
+    public Message deepClone() {
+        if (field13 == null) {
+            return this.toBuilder().build();
+        }
+        var ofm = new ObjectForMessage();
+        ofm.setData(new ArrayList<>(this.field13.getData()));
+        return this.toBuilder().field13(ofm).build();
     }
 
     public static class Builder {

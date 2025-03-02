@@ -15,7 +15,8 @@ public class ProcessorThrowEvenSecondExp implements Processor {
     @Override
     public Message process(Message message) {
         if (timeHolder.getLocalDateTime().getSecond() % 2 == 0) {
-            throw new EvenSecondException("Second even " + timeHolder.getLocalDateTime().getSecond());
+            throw new EvenSecondException(
+                    "Second even " + timeHolder.getLocalDateTime().getSecond());
         }
         return message;
     }

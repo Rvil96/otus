@@ -2,10 +2,10 @@ package ru.otus.model;
 
 import java.time.LocalDateTime;
 
-public class TimeHolder {
+public class TimeProvider {
     private final LocalDateTime localDateTime;
 
-    public TimeHolder(LocalDateTime localDateTime) {
+    public TimeProvider(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
     }
 

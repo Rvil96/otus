@@ -8,7 +8,7 @@ import ru.otus.handler.ComplexProcessor;
 import ru.otus.listener.ListenerPrinterConsole;
 import ru.otus.listener.homework.HistoryListener;
 import ru.otus.model.Message;
-import ru.otus.model.TimeHolder;
+import ru.otus.model.TimeProvider;
 import ru.otus.processor.homework.ProcessorSwapField11AndField12;
 import ru.otus.processor.homework.ProcessorThrowEvenSecondExp;
 
@@ -29,15 +29,15 @@ public class HomeWork {
     private static final Logger logger = LoggerFactory.getLogger(HomeWork.class);
 
     public static void main(String[] args) {
-        TimeHolder timeHolder;
+        TimeProvider timeProvider;
         while (true) {
             var time = LocalDateTime.now();
             if (time.getSecond() % 2 == 0) {
-                timeHolder = new TimeHolder(time);
+                timeProvider = new TimeProvider(time);
                 break;
             }
         }
-        var processors = List.of(new ProcessorThrowEvenSecondExp(timeHolder), new ProcessorSwapField11AndField12());
+        var processors = List.of(new ProcessorThrowEvenSecondExp(timeProvider), new ProcessorSwapField11AndField12());
 
         var complexProcessor = new ComplexProcessor(processors, ex -> logger.info("exception caught"));
         var historyListener = new HistoryListener();

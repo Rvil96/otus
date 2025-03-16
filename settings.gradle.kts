@@ -11,6 +11,8 @@ include("L15-structuralPatterns:homework")
 
 include("L16-io:homework")
 
+include("L18-jdbc:demo")
+include("L18-jdbc:homework")
 
 pluginManagement {
     val jgitver: String by settings

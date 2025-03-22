@@ -30,30 +30,33 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
 
     @Override
     public Optional<T> findById(Connection connection, long id) {
-        var optional = dbExecutor.executeSelect(
-                connection, entitySQLMetaData.getSelectByIdSql(), List.of(id), this::mapResultSetToObjects);
-        return optional.map(List::getFirst);
+        return dbExecutor
+                .executeSelect(
+                        connection, entitySQLMetaData.getSelectByIdSql(), List.of(id), this::mapResultSetToObjects)
+                .map(List::getFirst);
     }
 
     @Override
     public List<T> findAll(Connection connection) {
-        var optList = dbExecutor.executeSelect(
-                connection, entitySQLMetaData.getSelectAllSql(), Collections.emptyList(), this::mapResultSetToObjects);
-        return optList.orElse(Collections.emptyList());
+        return dbExecutor
+                .executeSelect(
+                        connection,
+                        entitySQLMetaData.getSelectAllSql(),
+                        Collections.emptyList(),
+                        this::mapResultSetToObjects)
+                .orElse(Collections.emptyList());
     }
 
     @Override
     public long insert(Connection connection, T client) {
-        var valueFields = getValueFields(client, false);
-        return dbExecutor.executeStatement(connection, entitySQLMetaData.getInsertSql(), valueFields);
+        return dbExecutor.executeStatement(connection, entitySQLMetaData.getInsertSql(), getValueFields(client, false));
     }
 
     @Override
     public void update(Connection connection, T client) {
-        var valueFields = getValueFields(client, true);
-        dbExecutor.executeStatement(connection, entitySQLMetaData.getUpdateSql(), valueFields);
+        dbExecutor.executeStatement(connection, entitySQLMetaData.getUpdateSql(), getValueFields(client, true));
     }
-
+// Тут тоже можно было бы вынести в отдельный класс
     private List<T> mapResultSetToObjects(ResultSet rs) {
         var resultList = new ArrayList<T>();
         try {

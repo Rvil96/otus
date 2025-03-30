@@ -10,43 +10,43 @@ import ru.otus.jdbc.mapper.convention.FieldNameConventionMapper;
 public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
 
     private final EntityClassMetaData<T> entityClassMetaData;
-    private final String TABLE_NAME;
-    private final String SELECT_ALL;
-    private final String SELECT_BY_ID;
-    private final String INSERT;
-    private final String UPDATE;
+    private final String tableName;
+    private final String selectAll;
+    private final String selectById;
+    private final String insert;
+    private final String update;
 
     public EntitySQLMetaDataImpl(EntityClassMetaData<T> entityClassMetaData) {
         this.entityClassMetaData = entityClassMetaData;
-        this.TABLE_NAME = FieldNameConventionMapper.camelToSnake(entityClassMetaData.getName());
-        this.SELECT_ALL = initSqlSelect();
-        this.SELECT_BY_ID = initSqlSelectById();
-        this.INSERT = initSqlInsert();
-        this.UPDATE = initSqlUpdate();
+        this.tableName = FieldNameConventionMapper.camelToSnake(entityClassMetaData.getName());
+        this.selectAll = initSqlSelect();
+        this.selectById = initSqlSelectById();
+        this.insert = initSqlInsert();
+        this.update = initSqlUpdate();
     }
 
     @Override
     public String getSelectAllSql() {
-        return SELECT_ALL;
+        return selectAll;
     }
 
     @Override
     public String getSelectByIdSql() {
-        return SELECT_BY_ID;
+        return selectById;
     }
 
     @Override
     public String getInsertSql() {
-        return INSERT;
+        return insert;
     }
 
     @Override
     public String getUpdateSql() {
-        return UPDATE;
+        return update;
     }
 
     private String initSqlSelect() {
-        var sql = "SELECT * FROM " + TABLE_NAME;
+        var sql = "SELECT * FROM " + tableName;
         log.info("Sql for select all is generated: {}", sql);
         return sql;
     }
@@ -55,7 +55,7 @@ public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
         var idName = FieldNameConventionMapper.camelToSnake(
                 entityClassMetaData.getIdField().getName());
 
-        var sql = "SELECT * FROM " + TABLE_NAME + " WHERE " + idName + " = ?";
+        var sql = "SELECT * FROM " + tableName + " WHERE " + idName + " = ?";
         log.info("Sql for select by id is generated: {}", sql);
         return sql;
     }
@@ -63,7 +63,9 @@ public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
     private String initSqlInsert() {
         var fields = entityClassMetaData.getFieldsWithoutId();
 
-        if (fields.isEmpty()) throw new RuntimeException("No fields found in " + entityClassMetaData.getName());
+        if (fields.isEmpty()) {
+            throw new RuntimeException("No fields found in " + entityClassMetaData.getName());
+        }
 
         var fieldsName = fields.stream()
                 .map(Field::getName)
@@ -72,7 +74,7 @@ public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
 
         var placeHolders = String.join(", ", Collections.nCopies(fields.size(), "?"));
 
-        var sql = "INSERT INTO " + TABLE_NAME + " (" + fieldsName + ") VALUES (" + placeHolders + ")";
+        var sql = "INSERT INTO " + tableName + " (" + fieldsName + ") VALUES (" + placeHolders + ")";
         log.info("Sql for insert is generated: {}", sql);
 
         return sql;
@@ -92,7 +94,7 @@ public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
         var idString = FieldNameConventionMapper.camelToSnake(
                 entityClassMetaData.getIdField().getName());
 
-        var sql = "UPDATE " + TABLE_NAME + " SET " + fieldsString + " WHERE " + idString + " = ?";
+        var sql = "UPDATE " + tableName + " SET " + fieldsString + " WHERE " + idString + " = ?";
         log.info("Sql for update is generated: {}", sql);
         return sql;
     }

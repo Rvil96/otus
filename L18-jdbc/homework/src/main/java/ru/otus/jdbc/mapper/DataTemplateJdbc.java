@@ -56,7 +56,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
     public void update(Connection connection, T client) {
         dbExecutor.executeStatement(connection, entitySQLMetaData.getUpdateSql(), getValueFields(client, true));
     }
-// Тут тоже можно было бы вынести в отдельный класс
+
     private List<T> mapResultSetToObjects(ResultSet rs) {
         var resultList = new ArrayList<T>();
         try {

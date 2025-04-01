@@ -40,7 +40,6 @@ class HomeworkTest {
         sessionFactory.close();
     }
 
-    @Disabled("Удалить при выполнении ДЗ")
     @Test
     void testHomeworkRequirementsForTablesCount() {
 

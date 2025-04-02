@@ -1,6 +1,8 @@
 package ru.otus.crm.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,12 +24,17 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Phone> phones;
+    @OneToMany(
+            mappedBy = "client",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.EAGER)
+    private List<Phone> phones = Collections.emptyList();
 
     public Client(String name) {
         this.id = null;
@@ -39,14 +46,30 @@ public class Client implements Cloneable {
         this.name = name;
     }
 
-    public <E> Client(Long id, String name, Address address, List<Phone> phones) {
-        throw new UnsupportedOperationException();
+    @SuppressWarnings("this-escape")
+    public Client(Long id, String name, Address address, List<Phone> phones) {
+        this.id = id;
+        this.name = name;
+        setAddress(address);
+        setPhones(phones);
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+        if (this.address != null) {
+            this.address.setClient(this);
+        }
+    }
+
+    public void setPhones(List<Phone> phones) {
+        this.phones = phones != null ? new ArrayList<>(phones) : new ArrayList<>();
+        this.phones.forEach(phone -> phone.setClient(this));
     }
 
     @Override
     @SuppressWarnings({"java:S2975", "java:S1182"})
     public Client clone() {
-        return new Client(this.id, this.name);
+        return new Client(this.id, this.name, this.address, this.phones);
     }
 
     @Override

@@ -31,9 +31,9 @@ public class DbServiceDemo {
                 HibernateUtils.buildSessionFactory(configuration, Client.class, Address.class, Phone.class);
 
         var transactionManager = new TransactionManagerHibernate(sessionFactory);
-        ///
+
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
-        ///
+
         var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
         dbServiceClient.saveClient(new Client("dbServiceFirst"));
 

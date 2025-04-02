@@ -3,7 +3,6 @@ package ru.otus.crm.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.base.AbstractHibernateTest;
@@ -16,14 +15,8 @@ import ru.otus.crm.model.Phone;
 class DbServiceClientTest extends AbstractHibernateTest {
 
     @Test
-    @Disabled("Удалить при выполнении ДЗ")
     @DisplayName(" корректно сохранять, изменять и загружать клиента")
     void shouldCorrectSaveClient() {
-        // given
-        //        var client = new Client("Ivan");
-
-        // Это надо раскомментировать, у выполненного ДЗ, все тесты должны проходить
-        // Кроме удаления комментирования, тестовый класс менять нельзя
 
         var client = new Client(
                 null,

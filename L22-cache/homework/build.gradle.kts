@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project(":L18-jdbc:demo"))
+    implementation(project(":L22-cache:demo"))
 
     implementation("ch.qos.logback:logback-classic")
     implementation("org.flywaydb:flyway-core")

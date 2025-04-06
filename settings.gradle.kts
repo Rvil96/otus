@@ -17,6 +17,7 @@ include("L21-jpql:homework-template")
 
 include("L22-cache:cache")
 include("L22-cache:homework")
+include("L22-cache:demo")
 
 pluginManagement {
     val jgitver: String by settings

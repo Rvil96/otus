@@ -1,17 +1,20 @@
 package ru.otus;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.cachehw.HwListener;
+import ru.otus.cachehw.KeyWrapper;
+import ru.otus.cachehw.MyCache;
 import ru.otus.core.repository.executor.DbExecutorImpl;
 import ru.otus.core.sessionmanager.TransactionRunnerJdbc;
 import ru.otus.crm.datasource.DriverManagerDataSource;
 import ru.otus.crm.model.Client;
-import ru.otus.crm.model.Manager;
 import ru.otus.crm.service.DbServiceClientImpl;
-import ru.otus.crm.service.DbServiceManagerImpl;
 import ru.otus.jdbc.mapper.DataTemplateJdbc;
 import ru.otus.jdbc.mapper.EntityClassMetaData;
 import ru.otus.jdbc.mapper.EntityClassMetaDataImpl;
@@ -26,7 +29,7 @@ public class HomeWork {
 
     private static final Logger log = LoggerFactory.getLogger(HomeWork.class);
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         // Общая часть
         var dataSource = new DriverManagerDataSource(URL, USER, PASSWORD);
         flywayMigrations(dataSource);
@@ -38,8 +41,15 @@ public class HomeWork {
         EntitySQLMetaData entitySQLMetaDataClient = new EntitySQLMetaDataImpl<>(entityClassMetaDataClient);
         var dataTemplateClient = new DataTemplateJdbc<>(dbExecutor, entitySQLMetaDataClient, entityClassMetaDataClient);
 
-        // Код дальше должен остаться
-        var dbServiceClient = new DbServiceClientImpl(transactionRunner, dataTemplateClient);
+        var clientCash = new MyCache<KeyWrapper<Long>, Client>();
+        clientCash.addListener(new HwListener<KeyWrapper<Long>, Client>() {
+            @Override
+            public void notify(KeyWrapper<Long> key, Client value, String action) {
+                log.info("key:{}, value:{}, action: {}", key, value, action);
+            }
+        });
+
+        var dbServiceClient = new DbServiceClientImpl(transactionRunner, dataTemplateClient, clientCash);
         dbServiceClient.saveClient(new Client("dbServiceFirst"));
 
         var clientSecond = dbServiceClient.saveClient(new Client("dbServiceSecond"));
@@ -50,29 +60,32 @@ public class HomeWork {
         var listClient = dbServiceClient.findAll();
         log.info("Clients list: {}", listClient);
 
-        // Сделайте тоже самое с классом Manager (для него надо сделать свою таблицу)
+        // Проверка кеша
 
-        EntityClassMetaData<Manager> entityClassMetaDataManager = new EntityClassMetaDataImpl<>(Manager.class);
-        EntitySQLMetaData entitySQLMetaDataManager = new EntitySQLMetaDataImpl<>(entityClassMetaDataManager);
-        var dataTemplateManager =
-                new DataTemplateJdbc<>(dbExecutor, entitySQLMetaDataManager, entityClassMetaDataManager);
+        List<Client> clients = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            clients.add(dbServiceClient.saveClient(new Client(UUID.randomUUID().toString())));
+        }
 
-        var dbServiceManager = new DbServiceManagerImpl(transactionRunner, dataTemplateManager);
-        dbServiceManager.saveManager(new Manager("ManagerFirst"));
+        List<Long> ids = new ArrayList<>();
+        long startTimeWithCache = System.currentTimeMillis();
+        for (Client client : clients) {
+            dbServiceClient.getClient(client.getId());
+            ids.add(client.getId());
+        }
+        long ednTimeWithCache = startTimeWithCache - System.currentTimeMillis();
 
-        var managerSecond = dbServiceManager.saveManager(new Manager("ManagerSecond"));
-        var managerSecondSelected = dbServiceManager
-                .getManager(managerSecond.getNo())
-                .orElseThrow(() -> new RuntimeException("Manager not found, id:" + managerSecond.getNo()));
-        log.info("managerSecondSelected:{}", managerSecondSelected);
+        clients = null;
+        System.gc();
 
-        var managerList = dbServiceManager.findAll();
-        log.info("Manager list: {}", managerList);
+        long startTimeWithoutCache = System.currentTimeMillis();
+        for (Long id : ids) {
+            dbServiceClient.getClient(id);
+        }
+        long ednTimeWithoutCache = startTimeWithoutCache - System.currentTimeMillis();
 
-        dbServiceManager.saveManager(new Manager(2L, "UPDATE", "UPDATE"));
-
-        var managerList1 = dbServiceManager.findAll();
-        log.info("Manager list: {}", managerList1);
+        log.info("Time with cache {}", ednTimeWithCache);
+        log.info("Time without cache {}", ednTimeWithoutCache);
     }
 
     private static void flywayMigrations(DataSource dataSource) {

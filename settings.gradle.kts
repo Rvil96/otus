@@ -19,6 +19,8 @@ include("L22-cache:cache")
 include("L22-cache:homework")
 include("L22-cache:demo")
 
+include("L24-webServer")
+
 pluginManagement {
     val jgitver: String by settings
     val dependencyManagement: String by settings

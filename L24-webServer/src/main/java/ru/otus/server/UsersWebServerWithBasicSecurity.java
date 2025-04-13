@@ -11,7 +11,7 @@ import org.eclipse.jetty.security.Constraint;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Handler;
-import ru.otus.dao.UserDao;
+import ru.otus.repository.UserDao;
 import ru.otus.services.TemplateProcessor;
 
 public class UsersWebServerWithBasicSecurity extends UsersWebServerSimple {

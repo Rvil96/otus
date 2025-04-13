@@ -2,8 +2,8 @@ package ru.otus;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ru.otus.dao.InMemoryUserDao;
-import ru.otus.dao.UserDao;
+import ru.otus.repository.InMemoryUserDao;
+import ru.otus.repository.UserDao;
 import ru.otus.server.UsersWebServer;
 import ru.otus.server.UsersWebServerSimple;
 import ru.otus.services.TemplateProcessor;

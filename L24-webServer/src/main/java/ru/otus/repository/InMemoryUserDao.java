@@ -1,4 +1,4 @@
-package ru.otus.dao;
+package ru.otus.repository;
 
 import java.util.HashMap;
 import java.util.Map;

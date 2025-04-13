@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import ru.otus.dao.UserDao;
 import ru.otus.model.User;
+import ru.otus.repository.UserDao;
 
 @SuppressWarnings({"java:S1989"})
 public class UsersApiServlet extends HttpServlet {

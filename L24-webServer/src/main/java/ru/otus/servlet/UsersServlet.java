@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import ru.otus.dao.UserDao;
+import ru.otus.repository.UserDao;
 import ru.otus.services.TemplateProcessor;
 
 @SuppressWarnings({"java:S1989"})

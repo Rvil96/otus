@@ -67,11 +67,17 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     @Override
     public List<Client> findAll() {
-        return transactionRunner.doInTransaction(connection -> {
+        var clients = transactionRunner.doInTransaction(connection -> {
             var clientList = dataTemplate.findAll(connection);
             log.info("clientList:{}", clientList);
             return clientList;
         });
+        if (isCacheEnabled()) {
+            for (Client client: clients) {
+                cache.put(new KeyWrapper<>(client.getId()), client);
+            }
+        }
+        return clients;
     }
 
     private boolean isCacheEnabled() {

@@ -1,0 +1,104 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Пользователи</title>
+    <script>
+        function getUserById() {
+            const userIdTextBox = document.getElementById('userIdTextBox');
+            const userDataContainer = document.getElementById('userDataContainer');
+            const id = userIdTextBox.value;
+
+            fetch('api/user/' + id)
+                .then(response => response.json())
+                .then(user => {
+                    userDataContainer.innerHTML = JSON.stringify(user, null, 2);
+                });
+        }
+
+        function createUser() {
+            const name = document.getElementById('nameInput').value;
+            const login = document.getElementById('loginInput').value;
+            const street = document.getElementById('streetInput').value;
+            const number = document.getElementById('phoneInput').value;
+            const password = document.getElementById('passwordInput').value;
+
+
+            const clientData = {
+                name: name,
+                login: login,
+                password: password,
+                phone: {
+                    number: number
+                },
+                address: {
+                    street: street
+                }
+            };
+
+            fetch('api/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(clientData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Клиент успешно создан!');
+                    return response.text();
+                } else {
+                   return response.text();
+                }
+            })
+            .then(data => console.log('Созданный клиент:', data))
+            .catch(error => alert(error.message));
+        }
+    </script>
+</head>
+
+<body>
+<h4>Получить пользователя по id</h4>
+<input type="text" id="userIdTextBox" value="3" placeholder="Введите id пользователя">
+<button onclick="getUserById()">Получить</button>
+<pre id="userDataContainer"></pre>
+
+<hr/>
+
+<h4>Пользователи</h4>
+<h4>Пользователи</h4>
+<table style="width: 400px">
+    <thead>
+    <tr>
+        <td style="width: 50px">Id</td>
+        <td style="width: 100px">Имя</td>
+        <td style="width: 100px">Логин</td>
+        <td style="width: 150px">Адрес</td>
+        <td style="width: 150px">Телефон</td>
+    </tr>
+    </thead>
+    <tbody>
+        <#list clients as client>
+            <tr>
+                <td>${client.id()}</td>
+                <td>${client.name()}</td>
+                <td>${client.login()}</td>
+                <td>${client.address().street()}</td>
+                <td>${client.phone().number()}</td>
+            </tr>
+        </#list>
+    </tbody>
+</table>
+
+<hr/>
+
+<h4>Создание нового клиента</h4>
+<form onsubmit="event.preventDefault(); createUser();">
+    <label>Имя: <input type="text" id="nameInput" required></label><br/>
+    <label>Логин: <input type="text" id="loginInput" required></label><br/>
+    <label>Пароль: <input type="text" id="passwordInput" required></label><br/>
+    <label>Улица: <input type="text" id="streetInput" ></label><br/>
+    <label>Номер телефона: <input type="text" id="phoneInput" ></label><br/>
+    <button type="submit">Создать клиента</button>
+</form>
+
+</body>
+</html>

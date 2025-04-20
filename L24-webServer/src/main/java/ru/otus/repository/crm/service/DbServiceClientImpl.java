@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.model.Client;
 import ru.otus.repository.core.repository.DataTemplate;
 import ru.otus.repository.core.sessionmanager.TransactionManager;
-import ru.otus.repository.crm.model.Client;
 
 public class DbServiceClientImpl implements DBServiceClient {
     private static final Logger log = LoggerFactory.getLogger(DbServiceClientImpl.class);
@@ -49,6 +49,17 @@ public class DbServiceClientImpl implements DBServiceClient {
             var clientList = clientDataTemplate.findAll(session);
             log.info("clientList:{}", clientList);
             return clientList;
+        });
+    }
+
+    @Override
+    public Optional<Client> getClientByLogin(String login) {
+        var loginFieldName = "login";
+        return transactionManager.doInReadOnlyTransaction(session -> {
+            var clientOptional = clientDataTemplate.findByEntityField(session, loginFieldName, login).stream()
+                    .findFirst();
+            log.info("Client {}", clientOptional);
+            return clientOptional;
         });
     }
 }

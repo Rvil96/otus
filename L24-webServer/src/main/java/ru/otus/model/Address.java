@@ -1,4 +1,4 @@
-package ru.otus.repository.crm.model;
+package ru.otus.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

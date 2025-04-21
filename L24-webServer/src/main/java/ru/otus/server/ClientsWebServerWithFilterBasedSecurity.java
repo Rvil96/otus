@@ -6,6 +6,10 @@ import org.eclipse.jetty.ee10.servlet.FilterHolder;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Handler;
+import ru.otus.dto.ClientDtoRq;
+import ru.otus.dto.ClientDtoRs;
+import ru.otus.mapper.Mapper;
+import ru.otus.model.Client;
 import ru.otus.repository.crm.service.DBServiceClient;
 import ru.otus.services.ClientAuthService;
 import ru.otus.services.TemplateProcessor;
@@ -20,8 +24,9 @@ public class ClientsWebServerWithFilterBasedSecurity extends ClientsWebServerSim
             ClientAuthService authService,
             DBServiceClient dbServiceClient,
             Gson gson,
-            TemplateProcessor templateProcessor) {
-        super(port, dbServiceClient, gson, templateProcessor);
+            TemplateProcessor templateProcessor,
+            Mapper<Client, ClientDtoRq, ClientDtoRs> mapper) {
+        super(port, dbServiceClient, gson, templateProcessor, mapper);
         this.authService = authService;
     }
 

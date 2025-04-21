@@ -8,8 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import ru.otus.dto.ClientDtoRq;
+import ru.otus.dto.ClientDtoRs;
 import ru.otus.exception.ClientAlreadyExistException;
-import ru.otus.mapper.ClientMapper;
+import ru.otus.mapper.Mapper;
 import ru.otus.model.Client;
 import ru.otus.repository.crm.service.DBServiceClient;
 
@@ -21,10 +22,13 @@ public class ClientApiServlet extends HttpServlet {
 
     private final transient DBServiceClient dbServiceClient;
     private final transient Gson gson;
+    private final transient Mapper<Client, ClientDtoRq, ClientDtoRs> mapper;
 
-    public ClientApiServlet(DBServiceClient dbServiceClient, Gson gson) {
+    public ClientApiServlet(
+            DBServiceClient dbServiceClient, Gson gson, Mapper<Client, ClientDtoRq, ClientDtoRs> mapper) {
         this.dbServiceClient = dbServiceClient;
         this.gson = gson;
+        this.mapper = mapper;
     }
 
     @Override
@@ -33,7 +37,7 @@ public class ClientApiServlet extends HttpServlet {
 
         response.setContentType("application/json;charset=UTF-8");
         ServletOutputStream out = response.getOutputStream();
-        out.print(gson.toJson(ClientMapper.toResponse(client)));
+        out.print(gson.toJson(mapper.toResponse(client)));
         log.info("Client is transferred: {}", client);
     }
 
@@ -49,7 +53,7 @@ public class ClientApiServlet extends HttpServlet {
                 throw new ClientAlreadyExistException("Client with " + clientDto.login() + " login exist.");
             }
 
-            var client = ClientMapper.toEntity(clientDto);
+            var client = mapper.toEntity(clientDto);
 
             dbServiceClient.saveClient(client);
 

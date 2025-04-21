@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import lombok.experimental.UtilityClass;
 import ru.otus.dto.AddressDto;
 import ru.otus.dto.ClientDtoRq;
 import ru.otus.dto.ClientDtoRs;
@@ -13,8 +12,8 @@ import ru.otus.model.Address;
 import ru.otus.model.Client;
 import ru.otus.model.Phone;
 
-@UtilityClass
-public class ClientMapper {
+public class ClientMapper implements Mapper<Client, ClientDtoRq, ClientDtoRs> {
+    @Override
     public Client toEntity(ClientDtoRq clientDto) {
         if (clientDto == null) {
             throw new IllegalArgumentException("Clint dto is null");
@@ -27,6 +26,7 @@ public class ClientMapper {
         return new Client(null, clientDto.name(), clientDto.login(), clientDto.password(), address, phones);
     }
 
+    @Override
     public ClientDtoRs toResponse(Client client) {
         if (client == null) {
             throw new IllegalArgumentException();
@@ -39,13 +39,13 @@ public class ClientMapper {
                 mapAddress(client.getAddress()));
     }
 
-    private static AddressDto mapAddress(Address address) {
+    private AddressDto mapAddress(Address address) {
         return Optional.ofNullable(address)
                 .map(addressEntity -> new AddressDto(addressEntity.getStreet()))
                 .orElse(new AddressDto(""));
     }
 
-    private static PhoneDto mapPhones(List<Phone> phones) {
+    private PhoneDto mapPhones(List<Phone> phones) {
         return phones.stream()
                 .filter(Objects::nonNull)
                 .map(phone -> new PhoneDto(phone.getNumber()))

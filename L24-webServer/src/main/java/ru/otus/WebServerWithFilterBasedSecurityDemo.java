@@ -3,6 +3,10 @@ package ru.otus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.hibernate.cfg.Configuration;
+import ru.otus.dto.ClientDtoRq;
+import ru.otus.dto.ClientDtoRs;
+import ru.otus.mapper.ClientMapper;
+import ru.otus.mapper.Mapper;
 import ru.otus.model.Address;
 import ru.otus.model.Client;
 import ru.otus.model.Phone;
@@ -44,9 +48,10 @@ public class WebServerWithFilterBasedSecurityDemo {
         Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
         TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
         ClientAuthService authService = new ClientAuthServiceImpl(dbServiceClient);
+        Mapper<Client, ClientDtoRq, ClientDtoRs> mapper = new ClientMapper();
 
         ClientsWebServer clientsWebServer = new ClientsWebServerWithFilterBasedSecurity(
-                WEB_SERVER_PORT, authService, dbServiceClient, gson, templateProcessor);
+                WEB_SERVER_PORT, authService, dbServiceClient, gson, templateProcessor, mapper);
 
         clientsWebServer.start();
         clientsWebServer.join();

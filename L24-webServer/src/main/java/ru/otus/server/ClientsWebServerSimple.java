@@ -6,7 +6,11 @@ import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import ru.otus.dto.ClientDtoRq;
+import ru.otus.dto.ClientDtoRs;
 import ru.otus.helpers.FileSystemHelper;
+import ru.otus.mapper.Mapper;
+import ru.otus.model.Client;
 import ru.otus.repository.crm.service.DBServiceClient;
 import ru.otus.services.TemplateProcessor;
 import ru.otus.servlet.ClientApiServlet;
@@ -20,13 +24,19 @@ public class ClientsWebServerSimple implements ClientsWebServer {
     private final Gson gson;
     protected final TemplateProcessor templateProcessor;
     private final Server server;
+    private final Mapper<Client, ClientDtoRq, ClientDtoRs> mapper;
 
     public ClientsWebServerSimple(
-            int port, DBServiceClient dbServiceClient, Gson gson, TemplateProcessor templateProcessor) {
+            int port,
+            DBServiceClient dbServiceClient,
+            Gson gson,
+            TemplateProcessor templateProcessor,
+            Mapper<Client, ClientDtoRq, ClientDtoRs> mapper) {
         this.dbServiceClient = dbServiceClient;
         this.gson = gson;
         this.templateProcessor = templateProcessor;
         server = new Server(port);
+        this.mapper = mapper;
     }
 
     @Override
@@ -54,7 +64,7 @@ public class ClientsWebServerSimple implements ClientsWebServer {
 
         Handler.Sequence sequence = new Handler.Sequence();
         sequence.addHandler(resourceHandler);
-        sequence.addHandler(applySecurity(servletContextHandler, "/users", "/api/user/*"));
+        sequence.addHandler(applySecurity(servletContextHandler, "/clients", "/api/client/*"));
 
         server.setHandler(sequence);
     }
@@ -75,9 +85,10 @@ public class ClientsWebServerSimple implements ClientsWebServer {
 
     private ServletContextHandler createServletContextHandler() {
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        servletContextHandler.addServlet(new ServletHolder(new ClientApiServlet(dbServiceClient, gson)), "/api/user/*");
         servletContextHandler.addServlet(
-                new ServletHolder(new ClientServlet(templateProcessor, dbServiceClient)), "/users");
+                new ServletHolder(new ClientApiServlet(dbServiceClient, gson, mapper)), "/api/client/*");
+        servletContextHandler.addServlet(
+                new ServletHolder(new ClientServlet(templateProcessor, dbServiceClient, mapper)), "/clients");
         return servletContextHandler;
     }
 }

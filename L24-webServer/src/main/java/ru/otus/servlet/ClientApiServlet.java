@@ -1,7 +1,6 @@
 package ru.otus.servlet;
 
 import com.google.gson.Gson;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,16 +31,6 @@ public class ClientApiServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Client client = dbServiceClient.getClient(extractIdFromRequest(request)).orElse(null);
-
-        response.setContentType("application/json;charset=UTF-8");
-        ServletOutputStream out = response.getOutputStream();
-        out.print(gson.toJson(mapper.toResponse(client)));
-        log.info("Client is transferred: {}", client);
-    }
-
-    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         var bodyReader = req.getReader();
         ClientDtoRq clientDto = gson.fromJson(bodyReader, ClientDtoRq.class);
@@ -68,11 +57,5 @@ public class ClientApiServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write(e.getMessage());
         }
-    }
-
-    private long extractIdFromRequest(HttpServletRequest request) {
-        String[] path = request.getPathInfo().split("/");
-        String id = (path.length > 1) ? path[ID_PATH_PARAM_POSITION] : String.valueOf(-1);
-        return Long.parseLong(id);
     }
 }

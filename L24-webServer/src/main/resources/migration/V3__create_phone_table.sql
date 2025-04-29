@@ -9,3 +9,6 @@ CREATE TABLE phone (
 ALTER TABLE phone
 ADD CONSTRAINT fk_phone_client
 FOREIGN KEY (client_id) REFERENCES client(id);
+
+INSERT INTO phone (number, client_id)
+VALUES ('+7 (999) 000 00 00', 1);

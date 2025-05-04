@@ -18,12 +18,6 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private final AnnotationProcessor annotationProcessors;
     private final Reflections reflections;
 
-    public AppComponentsContainerImpl(Class<?> initialConfigClass) {
-        reflections = new Reflections();
-        annotationProcessors = new AppComponentAnnotationProcessor();
-        processConfig(initialConfigClass);
-    }
-
     public AppComponentsContainerImpl(Class<?>... initialConfigClasses) {
         reflections = new Reflections();
         annotationProcessors = new AppComponentAnnotationProcessor();

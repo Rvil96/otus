@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        form {
+            margin: 20px 0;
+        }
+        label {
+            margin-right: 10px;
+        }
+        input {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Create New Client</h2>
+<form id="createClientForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="street">Street Address:</label>
+    <input type="text" id="street" name="street"><br><br>
+
+    <label for="phone1">Phone 1:</label>
+    <input type="text" id="phone1" name="phone1"><br><br>
+
+    <label for="phone2">Phone 2:</label>
+    <input type="text" id="phone2" name="phone2"><br><br>
+
+    <button type="submit">Create Client</button>
+</form>
+
+<h2>Client List</h2>
+<table id="clientTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Phones</th>
+        <th>Address</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script src="script.js"></script>
+</body>
+</html>

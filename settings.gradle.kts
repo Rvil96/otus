@@ -25,6 +25,8 @@ include("L25-di")
 
 include("L28-springDataJdbc")
 
+include ("L31-executors")
+
 pluginManagement {
     val jgitver: String by settings
     val dependencyManagement: String by settings

@@ -6,6 +6,11 @@ import ru.otus.api.SensorDataProcessor;
 import ru.otus.api.model.SensorData;
 import ru.otus.lib.SensorDataBufferedWriter;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Queue;
+import java.util.concurrent.PriorityBlockingQueue;
+
 // Этот класс нужно реализовать
 @SuppressWarnings({"java:S1068", "java:S125"})
 public class SensorDataProcessorBuffered implements SensorDataProcessor {
@@ -13,24 +18,32 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
 
     private final int bufferSize;
     private final SensorDataBufferedWriter writer;
+    private final Queue<SensorData> dataBuffer;
 
     public SensorDataProcessorBuffered(int bufferSize, SensorDataBufferedWriter writer) {
         this.bufferSize = bufferSize;
         this.writer = writer;
+        dataBuffer = new PriorityBlockingQueue<>(1, Comparator.comparing(SensorData::getMeasurementTime));
     }
 
     @Override
     public void process(SensorData data) {
-        /*
-            if (dataBuffer.size() >= bufferSize) {
-                flush();
-            }
-        */
+        dataBuffer.add(data);
+        if (dataBuffer.size() >= bufferSize) {
+            flush();
+        }
     }
 
-    public void flush() {
+    public synchronized void flush() {
+        if (dataBuffer.isEmpty()) {
+            return;
+        }
+        var bufferedData = new ArrayList<SensorData>();
+        while (!dataBuffer.isEmpty()) {
+            bufferedData.add(dataBuffer.poll());
+        }
         try {
-            // writer.writeBufferedData(bufferedData);
+            writer.writeBufferedData(bufferedData);
         } catch (Exception e) {
             log.error("Ошибка в процессе записи буфера", e);
         }
